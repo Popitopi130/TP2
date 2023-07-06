@@ -2,13 +2,26 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        Locale.setDefault(Locale.US);
+
+        // Get the file names
+        String info, writeOn;
+        try {
+            info = args[0];
+            writeOn = args[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            info = args[0];
+            writeOn = "output.txt";
+        }
         //read the file
-        BufferedReader reader = new BufferedReader(new FileReader("test1.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader(info));
 
         StringBuilder sb = new StringBuilder();
         String line;
@@ -18,10 +31,12 @@ public class Main {
         }
         String text = sb.toString();
         String[] parts = text.split(";");
-        Command command = new Command();
-        //for (String part : parts) {
-            command.firstWord(parts[0]);
-        //}
+        // System.out.println(Arrays.toString(parts));
+        // System.out.println(parts.length);
+        Command command = new Command(writeOn);
+        for (String part : parts) {
+            command.firstWord(part);
+        }
     }
 
 
