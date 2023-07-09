@@ -1,7 +1,13 @@
+import java.util.ArrayList;
+
 public class Medicament {
+    private String key;
     private String nom;
     private int nbrDeMed;
-    private String date;
+    private String dateStr;
+    private int annee;
+    private int mois;
+    private int jour;
     private int nbrParCycle;
     private int nbrDeCycle;
 
@@ -9,7 +15,14 @@ public class Medicament {
     public Medicament(String nom, int nbrDeMed, String date) {
         this.nom = nom;
         this.nbrDeMed = nbrDeMed;
-        this.date = date;
+        this.dateStr = date;
+
+        String[] content = dateStr.split("-");
+        this.annee = Integer.parseInt(content[0]);
+        this.mois = Integer.parseInt(content[1]);
+        this.jour = Integer.parseInt(content[2]);
+
+        this.key = nom + " " + dateStr;
     }
     // Pour la liste de commande
     public Medicament(String nom, int nbrParCycle, int nbrDeCycle){
@@ -17,6 +30,43 @@ public class Medicament {
         this.nbrDeMed = nbrParCycle * nbrDeCycle;
         this.nbrParCycle = nbrParCycle;
         this.nbrDeCycle = nbrDeCycle;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+
+    public String getDateStr() {
+        return dateStr;
+    }
+
+    public void setDateStr(String dateStr) {
+        this.dateStr = dateStr;
+    }
+
+    public int getAnnee() {
+        return annee;
+    }
+
+    public void setAnnee(int annee) {
+        this.annee = annee;
+    }
+
+    public int getMois() {
+        return mois;
+    }
+
+    public void setMois(int mois) {
+        this.mois = mois;
+    }
+
+    public int getJour() {
+        return jour;
+    }
+
+    public void setJour(int jour) {
+        this.jour = jour;
     }
 
     public String getNom() {
@@ -31,16 +81,8 @@ public class Medicament {
         return nbrDeMed;
     }
 
-    public void setNbrDeMed(int nbrDeMed) {
-        this.nbrDeMed = nbrDeMed;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+    public void addNbrDeMed(int nbrDeMed) {
+        this.nbrDeMed += nbrDeMed;
     }
 
     public int getNbrParCycle() {
@@ -57,5 +99,14 @@ public class Medicament {
 
     public void setNbrDeCycle(int nbrDeCycle) {
         this.nbrDeCycle = nbrDeCycle;
+    }
+
+    @Override
+    public String toString() {
+        return "Medicament{" +
+                "nom='" + nom + '\'' +
+                ", nbrDeMed=" + nbrDeMed +
+                ", dateStr='" + dateStr + '\'' +
+                '}' + "\n";
     }
 }

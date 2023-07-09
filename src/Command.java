@@ -1,22 +1,19 @@
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Command {
     private String txt;
 
     // Le integer (key) devrait etre le numero qui suit dans "MedicamentXX" et sera utilisé pour ordonner l'arbre
     // Ceci est pour la fonction "date" et "prescription"
-    private TreeMap<Integer, Medicament> commandeMed = new TreeMap<>();
+    private TreeMap<String, Medicament> commandeMed = new TreeMap<>();
 
     // Definit lorsque la fonction "date" est appellé
     private String currentDate;
 
     // Garde en mémoire le stock de médicaments et ordonné avec le numero qui suit dans "MedicamentXX" (integer)
     // Ceci est pour la fonction "approv", "stock" et "prescription"
-    private TreeMap<Integer, Medicament> stockMed = new TreeMap<>();
+    private TreeMap<String, Medicament> stockMed = new TreeMap<>();
 
 
     public Command(String txt) {
@@ -47,6 +44,8 @@ public class Command {
     /*
         Ajouter des médicaments au stock
         Faire attention aux dates d'expiration (même med peut avoir différentes dates)
+
+        *** IL RESTE A ECRIRE SUR LE FICHIER OUTPUT ***
      */
     public void approv(String parts){
         String modifiedInput = parts.replaceFirst("\n", "");
@@ -58,12 +57,18 @@ public class Command {
         for (String partition: partitions){
             if (partition.startsWith("APPROV :")) {
                 continue;}
-            String med = partition.replaceFirst("Medicament","") ;
-            String[] medi = med.split(" ");
-            //Medicament medicament = new Medicament(medi[2],Integer.parseInt(medi[1]), Integer.parseInt(medi[0]));
-            //medicamentList.add(medicament);
-            //MedicamentTree medicamentTree = new MedicamentTree();
+            String[] med = partition.split("[ \t]");
+            System.out.println(Arrays.toString(med));
+            Medicament medicament = new Medicament(med[0], Integer.parseInt(med[1]),med[2]);
+
+            // Nom + date est deja dans stockMed
+            if (stockMed.containsKey(medicament.getKey())) {
+                stockMed.get(medicament.getKey()).addNbrDeMed(medicament.getNbrDeMed());
+                continue;
+            }
+            stockMed.put(medicament.getKey(), medicament);
         }
+        // System.out.println(stockMed.toString());
         System.out.println("approv done");
     }
 
@@ -101,5 +106,37 @@ public class Command {
      */
     public void stock(){
         System.out.println("stock done");
+    }
+
+
+    public void writeStuffOn(String txt){
+        /*
+        Viens du tp1 pour aider
+
+    public static void writeFile(ArrayList<Building> buildings, String outputFile){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            // Write truck position with location building (index 0)
+            writer.write("Truck position: (" +
+                    buildings.get(0).getLatitude() + "," + buildings.get(0).getLongitude() + ")");
+            writer.write(String.format("\n%-30s%-30s%-30s",
+                    "Distance:" + (int) buildings.get(0).getDistance(),
+                    "Number of boxes:" + buildings.get(0).getAvailableBoxes(),
+                    "Position:(" + buildings.get(0).getLatitude() + "," + buildings.get(0).getLongitude() + ")"));
+
+            //Write other buildings of the list
+            int n = buildings.size();
+            for (int i = 1; i < n; i++) {
+                writer.write(String.format("\n%-30s%-30s%-30s",
+                        "Distance:%.1f".formatted(buildings.get(i).getDistance()),
+                        "Number of boxes:" + buildings.get(i).getAvailableBoxes(),
+                        "Position:(" + buildings.get(i).getLatitude() + "," + buildings.get(i).getLongitude() + ")"));
+            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+         */
     }
 }
