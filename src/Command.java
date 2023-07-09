@@ -1,5 +1,11 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Command {
     private String txt;
@@ -20,7 +26,8 @@ public class Command {
         this.txt = txt;
     }
 
-    public void firstWord(String parts) {
+    public void firstWord(String parts) throws IOException {
+
         String[] lines = parts.split("\\n");
         String nameLine;
         if (lines[0].trim().equals("")) {
@@ -34,12 +41,18 @@ public class Command {
         } else if (nameLine.startsWith("DATE")) {
             date();
         } else if (nameLine.startsWith("PRESCRIPTION")) {
-            prescription();
+            prescription(parts);
         } else if (nameLine.startsWith("STOCK")) {
             stock();
         }
     }
 
+    public void writeToTestFile(String content) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("test1.txt", true))) {
+            writer.write(content);
+            writer.newLine();
+        }
+    }
 
     /*
         Ajouter des médicaments au stock
@@ -47,29 +60,32 @@ public class Command {
 
         *** IL RESTE A ECRIRE SUR LE FICHIER OUTPUT ***
      */
-    public void approv(String parts){
+    public void approv(String parts) throws IOException {
         String modifiedInput = parts.replaceFirst("\n", "");
         String[] partitions = modifiedInput.split("\n");
 
-        System.out.println(Arrays.toString(partitions));
+
 
         List<Medicament> medicamentList = new ArrayList<>();
         for (String partition: partitions){
             if (partition.startsWith("APPROV :")) {
                 continue;}
             String[] med = partition.split("[ \t]");
-            System.out.println(Arrays.toString(med));
             Medicament medicament = new Medicament(med[0], Integer.parseInt(med[1]),med[2]);
 
             // Nom + date est deja dans stockMed
-            if (stockMed.containsKey(medicament.getKey())) {
+            if (stockMed.containsKey(medicament.getnom())) {
                 stockMed.get(medicament.getKey()).addNbrDeMed(medicament.getNbrDeMed());
                 continue;
             }
             stockMed.put(medicament.getKey(), medicament);
         }
+
         // System.out.println(stockMed.toString());
         System.out.println("approv done");
+       writeToTestFile("APPROV OK");
+
+
     }
 
     /*
@@ -96,20 +112,83 @@ public class Command {
         2. Checker si med ne va pas expiré avant le traitement (attention année bissextile)
         3. Retirer du stock (si =0, alors supprimer med de stock)
      */
-    public void prescription(){
-        System.out.println("prescription done");
+    public void prescription(String parts) {
+        String modifiedInput = parts.replaceFirst("\n", "");
+        String[] partitions = modifiedInput.split("\n");
+        List<Medicament> medicamentList = new ArrayList<>();
+        for (String partition : partitions) {
+            if (partition.startsWith("PRESCRIPTION :")) {
+                continue;
+            }
+
+            System.out.println("prescription done");
+
+        }
     }
 
-    /*
-        Fait juste écrire sur le fichier output le stock
-        Vérifier si les meds n'ont pas expirés!
-     */
-    public void stock(){
+
+
+
+
+
+
+
+    public void stock() throws IOException {
+    // *********rentrer la bonne date
+        String currentDate1 = "2017-10-26";
+        LocalDate date1 = LocalDate.parse(currentDate1);
+        writeToTestFile("\n"+"STOCK "+ currentDate1);
+
+        List<String> medList = new ArrayList<>();
+        for (Map.Entry<String, Medicament> entry : stockMed.entrySet()) {
+            String key = entry.getKey();
+            Medicament medicament = entry.getValue();
+            if (LocalDate.parse(medicament.getDateStr()).isAfter(date1)) {
+                writeToTestFile(medicament.getnom() +" "+ medicament.getNbrDeMed() +" "+ medicament.getDateStr());
+            }
+        }
+        writeToTestFile("\n");
+
         System.out.println("stock done");
     }
 
+    public static long calculateDaysBetweenDates(LocalDate startDate, LocalDate endDate) {
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
 
-    public void writeStuffOn(String txt){
+        // Adjust for leap years between 2000 and 2025
+        int leapYears = countLeapYears(startDate, endDate);
+        daysBetween -= leapYears;
+
+        return daysBetween;
+    }
+
+    public static int countLeapYears(LocalDate startDate, LocalDate endDate) {
+        int startYear = startDate.getYear();
+        int endYear = endDate.getYear();
+
+        int leapYears = 0;
+        for (int year = startYear; year <= endYear; year++) {
+            if (isLeapYear(year)) {
+                leapYears++;
+            }
+        }
+
+        return leapYears;
+    }
+
+    public static boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
+
+
+
+
+
+
+
+
+public void writeStuffOn(String txt){
         /*
         Viens du tp1 pour aider
 
