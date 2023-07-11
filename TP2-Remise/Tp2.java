@@ -1,12 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
-public class Main {
+public class Tp2 {
 
     public static void main(String[] args) throws IOException {
         Locale.setDefault(Locale.US);
